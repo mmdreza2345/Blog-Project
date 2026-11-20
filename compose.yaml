@@ -1,0 +1,39 @@
+name: b-lock
+services:
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: block_blog
+      MYSQL_USER: blog
+      MYSQL_PASSWORD: ${BLOG_DB_PASSWORD:-local-portfolio-db}
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+    volumes:
+      - blog_data:/var/lib/mysql
+      - ./database:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "MYSQL_PWD=\"$$MYSQL_PASSWORD\" mysql --protocol=TCP -h 127.0.0.1 -u blog block_blog -e 'SELECT 1 FROM articles LIMIT 1' >/dev/null 2>&1"]
+      interval: 3s
+      timeout: 5s
+      retries: 40
+      start_period: 15s
+
+  api:
+    build: ./backend
+    environment:
+      DB_HOST: db
+      DB_NAME: block_blog
+      DB_USER: blog
+      DB_PASSWORD: ${BLOG_DB_PASSWORD:-local-portfolio-db}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    build: .
+    ports:
+      - "127.0.0.1:${BLOG_PORT:-3000}:3000"
+    depends_on:
+      - api
+
+volumes:
+  blog_data:

@@ -1,0 +1,47 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-text-fill-color: #0f172a !important;
+  -webkit-box-shadow: 0 0 0px 1000px #fff inset;
+  border: 1px solid black !important; /* معادل border پیش‌فرض Tailwind */
+  transition: background-color 999999s ease-in-out 0s;
+}
+
+body {
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: #0F172A;
+  color: #F9FAFB;
+  font-size: 0.85rem;
+}
+
+
+.field {
+  display: block;
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.75rem;
+  background: white;
+  font: inherit;
+}
+
+.field:focus-visible, button:focus-visible, a:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.page-status {
+  padding: 3rem 1.5rem;
+  text-align: center;
+  color: #334155;
+}
+
+button:not(:disabled) { cursor: pointer; }

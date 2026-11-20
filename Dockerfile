@@ -1,0 +1,19 @@
+FROM public.ecr.aws/docker/library/node:22-alpine AS build
+WORKDIR /app
+ENV NEXT_TELEMETRY_DISABLED=1 API_ORIGIN=http://api:8000
+COPY . .
+RUN npm ci --no-audit --no-fund && npm run build \
+    && mkdir -p /dist/.next \
+    && cp -R .next/standalone/. /dist/ \
+    && cp -R .next/static /dist/.next/ \
+    && cp -R public /dist/ \
+    && rm -rf node_modules .next \
+    && npm cache clean --force
+
+FROM public.ecr.aws/docker/library/node:22-alpine
+WORKDIR /app
+ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 HOSTNAME=0.0.0.0 PORT=3000
+COPY --from=build --chown=node:node /dist/ ./
+USER node
+EXPOSE 3000
+CMD ["node", "server.js"]
